@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block imports %}
+{{ super() }}
+<link rel="stylesheet" href="/static/css/pygments.css">
+{% endblock %}
+{% block content %}
+    <article>
+        <div class="post-description">
+            <h3>{{ post.title }}</h3>
+            <time datetime="{{ format_time(post.ts) }}">{{ readable_time(post.ts) }}</time>
+        </div>
+        {{ post.html }}
+    </article>
+{% endblock %}

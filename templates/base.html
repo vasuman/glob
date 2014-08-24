@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>
+        {% block title %} {{ config.title }} {% endblock %}
+    </title>
+    {% block imports %}
+    <link rel="stylesheet" href="/static/css/blog.css">
+    {% endblock %}
+{% endblock %}
+</head>
+<body>
+    <div id="header" > 
+        <a href="/"><h1> {{ config.title }} </h1></a> 
+        <h2> {{ config.subtitle }} </h2>
+    </div>
+    <div id="sidebar">
+        <nav>
+            <ul>
+                {% for link in config.nav_links %}
+                <li>
+                    <a href="{{ link.url }}">{{ link.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+    <div id="content">
+        {% block content %}
+	{{ content }}
+        {% endblock %}
+    </div>
+    <footer>
+        <address>
+            <a href="mailto:{{ config.email }}">{{ config.author }}</a>
+        </address>
+        <div id="accounts">
+            <ul>
+                <li><a href="https://github.com/{{ config.accounts.github }}">GitHub</a></li>
+                <li><a href="https://twitter.com/{{ config.accounts.twitter }}">Twitter</a></li>
+            </ul>
+        </div>
+        <div id="creds">
+            Generated using, <a href="https://github.com/vasuman/glob">glob</a>
+        </div>
+    </footer>
+</body>
+</html>

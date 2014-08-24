@@ -1,0 +1,17 @@
+title: Something Witty
+subtitle: Short description
+author: Rifle Ravi
+url:
+        domain: example.com
+        path: /
+post_prefix: posts 
+email: mailto@example.com
+accounts:
+        github: github
+        twitter: twitter
+# Add links to pages here
+nav_links:
+        - name: Posts
+          url: /index.html
+        - name: About Me
+          url: /about.html

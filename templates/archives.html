@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="posts">
+  <h3> Posts </h3>
+  <table class="post-group">
+    <tbody>
+      {% for g in groups %}
+      <tr class="group-heading">
+        <th colspan="2"> <h4> {{ group_qual(g) }}  </h4> </th>
+      </tr>
+      {% for post in g.posts %}
+      <tr class="post-item">
+        <td class="post-day"> 
+          {{ date_ordinal(post.ts.tm_mday) }} 
+        </td>
+        <td>
+          <a href="{{ config.post_prefix }}/{{ post.slug }}.html">
+            {{ post.title }}
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

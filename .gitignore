@@ -1,0 +1,6 @@
+pages
+posts
+out/
+*.swp
+*.swo
+config.yml

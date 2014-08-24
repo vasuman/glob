@@ -1,0 +1,206 @@
+@import url(http://fonts.googleapis.com/css?family=Play|Roboto:300);
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Play", sans-serif;
+}
+
+#header {
+    border-bottom: 1px solid;
+}
+
+#header > a {
+    text-decoration: none;
+}
+
+#header > a > h1 {
+    font-size: 36px;
+    color: darkmagenta;
+    margin: 0.2em;
+    margin-right: 0.7em;
+    display: inline-block;
+}
+
+#header > h2 {
+    font-size: 18px;
+    color: grey;
+    display: inline-block;
+    margin: 0;
+}
+
+#posts > h3 {
+    margin-bottom: 0;
+}
+
+.post-description {
+    background-color: rgb(200, 236, 200);
+    border: 1px green dotted;
+}
+
+.post-description > h3 {
+    margin: 0;
+    margin-top: 0.2em;
+    font-size: 24px;
+    text-align: center;
+}
+
+.post-description > time {
+    display: block;
+    text-align: right;
+    margin: 0.2em;
+    font-family: monospace;
+    margin-right: 1em;
+}
+
+nav {
+    text-align: center;
+}
+
+nav > ul {
+    display: inline;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+}
+
+.post-group {
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: 1.8em;
+}
+
+tbody, tr, td {
+    margin: 0;
+    padding: 0;
+}
+
+.group-heading {
+    margin: 0;
+    text-align: left;
+    padding: 0.5em;
+    width: 100%;
+}
+
+.group-heading > th {
+    margin: 0;
+    border-bottom: 1px solid black;
+}
+
+.group-heading > th > h4 {
+    margin: 0.5em;
+    margin-top: 1.5em;
+}
+
+nav > ul > li {
+    display: inline;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border: 1px solid black;
+    border-right: none;
+}
+
+nav > ul > li:last-child {
+    border-right: 1px solid black;
+}
+
+nav > ul > li > a {
+    text-decoration: none;
+    color: black;
+    font-family: "Play", monospace;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+blockquote {
+    text-align: left;
+    background-color: #eee;
+    padding-left: 0.5em;
+    border-left: 0.5em #555 solid;
+    font-style: italic;
+    color: #666;
+}
+
+code {
+    background-color: #ddd;
+    font-family: monospace;
+    border-radius: 5px;
+    padding: 0.2em;
+    font-size: 13px;
+}
+
+.codehilitetable {
+    margin-left: 1em;
+}
+
+.linenodiv > pre {
+    padding: 0.5em;
+    border: 1px solid black;
+}
+
+.codehilite {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.codehilite > pre {
+    overflow: auto;
+    border: 1px grey solid;
+    border-radius: 0;
+    background-color: #000;
+    color: #fff;
+    margin: 0;
+    padding: 0.3em;
+    text-align: left;
+}
+
+article {
+    max-width: 1000px;
+    display: inline-block;
+    margin: 0.8em;
+}
+
+article > p {
+    font-size: 15px;
+    text-align: left;
+    margin: 1.2em;
+}
+
+article > h1, article > h2, article > h3, article > h4, article > h5, article > h6 {
+    text-align: left;
+}
+
+footer {
+    border-top: 1px solid;
+    font-family: "Play", monospace;
+}
+
+#accounts > ul {
+    width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 0.2em;
+}
+
+#accounts > ul > li {
+    display: inline;
+    padding-left: 0.8em;
+}
+
+address > a {
+    text-decoration: none;
+    font-style: normal;
+    color: black;
+}
+
+#creds {
+    font-size: 50%;
+    margin-top: 1.2em;
+    color: rgb(85, 85, 85);
+}
