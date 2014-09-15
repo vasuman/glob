@@ -95,6 +95,10 @@ class Post:
         self.title = md.Meta['title'][0]
         self.ts = parse_date(md.Meta['date'][0])
 
+    def get_path(self, posts_dir):
+        return join(posts_dir, '{}/{}/{}'.format(self.ts.tm_year, 
+            self.ts.tm_mon, self.ts.tm_mday), self.slug) + '.html'
+
 class StaticGenerator:
     def __init__(self, src_dir, out_dir):
         self.src_dir = src_dir
@@ -119,11 +123,14 @@ class StaticGenerator:
         posts_path = join(self.src_dir, POSTS_DIR)
         each_file(posts_path, process_post)
         blog_dir = join(self.out_dir, self.config['post_prefix'])
-        if not exists(blog_dir):
-            os.makedirs(blog_dir)
+        if os.path.exists(blog_dir):
+            rmtree(blog_dir)
         post_template = self.env.get_template('post.html')
         for post in self._posts:
-            out_path = join(blog_dir, post.slug + '.html')
+            out_path = post.get_path(blog_dir)
+            out_dir = dirname(out_path)
+            if not exists(out_dir):
+                os.makedirs(out_dir)
             with open(out_path, 'wb') as f:
                 out = post_template.render(post = post, config = self.config)
                 f.write(out)

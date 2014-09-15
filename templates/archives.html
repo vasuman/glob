@@ -15,7 +15,7 @@
           {{ date_ordinal(post.ts.tm_mday) }} 
         </td>
         <td>
-          <a href="{{ config.post_prefix }}/{{ post.slug }}.html">
+          <a href="{{ post.get_path(config.post_prefix) }}">
             {{ post.title }}
           </a>
         </td>
