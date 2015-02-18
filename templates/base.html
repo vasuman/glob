@@ -45,12 +45,16 @@
     </div>
     <footer>
         <address>
-            <a href="mailto:{{ config.email }}">{{ config.author }}</a>
+            <a id="email-link" href="{{ config.email|safe }}">{{ config.author }}</a>
         </address>
         <div id="accounts">
             <ul>
+                {% if config.accounts.github %} 
                 <li><a href="https://github.com/{{ config.accounts.github }}">GitHub</a></li>
+                {% endif %}
+                {% if config.accounts.twitter %} 
                 <li><a href="https://twitter.com/{{ config.accounts.twitter }}">Twitter</a></li>
+                {% endif %}
             </ul>
         </div>
         <div id="creds">

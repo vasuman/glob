@@ -4,8 +4,16 @@ h1, h2, h3, h4, h5, h6 {
     font-family: "Play", sans-serif;
 }
 
+.demo-description {
+    display: inline-block;
+    width: 75%;
+    text-align: left;
+    margin: 0.5em;
+    padding: 0.5em;
+    border: 2px inset blue;
+}
 #header {
-    background-color: darkred;
+    background-color: blueviolet;
     border-bottom: 1px solid;
 }
 
@@ -32,7 +40,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .post-description {
-    background-color: magenta;
+    background-color: lightblue;
     color: black;
     border: 1px green dotted;
 }
@@ -113,9 +121,10 @@ nav > ul > li > a {
 nav > ul > li > a:visited {
     color: black;
 }
+
 body {
-    background-color: darkmagenta;
-    color: lightyellow;
+    /* background-color: darkmagenta; */
+    /* color: lightyellow; */
     font-family: "Roboto", sans-serif;
     text-align: center;
     width: 100%;
@@ -124,16 +133,16 @@ body {
 }
 
 blockquote {
-    text-align: left;
-    background-color: #eee;
+    background-color: #222;
     padding-left: 0.5em;
     border-left: 0.5em #555 solid;
     font-style: italic;
-    color: #666;
+    color: #aaa;
 }
 
 code {
     background-color: #444;
+    color: white;
     font-family: monospace;
     border-radius: 5px;
     padding: 0.2em;
@@ -163,30 +172,47 @@ code {
     color: #fff;
     margin: 0;
     padding: 0.3em;
-    text-align: left;
 }
 
 article {
+    text-align: left;
     width: 90%;
     max-width: 1000px;
     display: inline-block;
     margin: 0.8em;
 }
 
+figcaption {
+    text-align: center;
+    color: #666;
+    font-weight: bold;
+}
+
+figure {
+    text-align: center;
+    padding: 1em;
+}
+
+figure > img {
+    max-width: 100%;
+    height: auto;
+    display: inline-block;
+    border: 1px solid;
+}
+
 article > p {
     font-size: 120%;
-    text-align: left;
     margin: 0.8em;
 }
 
 article > h1, article > h2, article > h3, article > h4, article > h5, article > h6 {
-    text-align: left;
+    color: green;
 }
 
 footer {
-    background-color: darkred;
     border-top: 1px solid;
     font-family: "Play", monospace;
+    /* background-color: darkred; */
 }
 
 #accounts > ul {
@@ -209,28 +235,20 @@ address > a {
 }
 
 #creds {
-    font-size: 50%;
-    margin-top: 1.2em;
+    font-size: 70%;
+    margin-top: 0.5em;
     color: rgb(85, 85, 85);
 }
 
-#content {
-    min-height: 100%;
-    height: 100%;
-}
 
 #main {
     margin: 1.3em;
 }
 
 a {
-    color: orange;
+    /* color: orange; */
 }
 
 a:visited {
-    color: orangered;
-}
-
-html {
-    background-color: darkred;
+    /* color: orangered; */
 }

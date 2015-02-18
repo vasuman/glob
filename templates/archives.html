@@ -7,7 +7,7 @@
     <tbody>
       {% for g in groups %}
       <tr class="group-heading">
-        <th colspan="2"> <h4> {{ group_qual(g) }}  </h4> </th>
+        <th colspan="2"> {{ group_qual(g) }} </th>
       </tr>
       {% for post in g.posts %}
       <tr class="post-item">

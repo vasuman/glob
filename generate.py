@@ -13,7 +13,7 @@ import time
 from collections import namedtuple
 
 
-MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)']
+MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list']
 
 TIME_FORMAT_READ = '%d-%m-%Y'
 TIME_FORMAT_WRITE = '%d %b %Y'
@@ -39,8 +39,11 @@ def group_posts(posts):
     for post in posts:
         if not add_to_class(post):
             cls.append(PostGroup(post.ts.tm_mon, post.ts.tm_year, [post]))
-    return sorted(cls, key = lambda x: x.year * 12 + x.month)
+    return sorted(cls, key = lambda x: x.year * 12 + x.month, reverse = True)
 
+
+def safe_email(email):
+    return email.split('@')
 
 def date_ordinal(day):
     if 4 <= day <= 20 or 24 <= day <= 30:
@@ -50,9 +53,11 @@ def date_ordinal(day):
     return str(day) + suffix
 
 def each_file(dir_path, func):
-    for dir, _, fnames in os.walk(dir_path):
+    for fdir, _, fnames in os.walk(dir_path):
         for fname in fnames:
-            path = join(dir, fname)
+            if fname.endswith('.swp'):
+                continue
+            path = join(fdir, fname)
             print path
             func(path)
 
@@ -73,6 +78,7 @@ def add_helpers(env):
     env.globals.update(format_time = format_time)
     env.globals.update(group_qual = group_qual)
     env.globals.update(date_ordinal = date_ordinal)
+    env.globals.update(safe_email = safe_email)
 
 def get_html(md_path):
     s = StringIO()
@@ -94,6 +100,7 @@ class Post:
             print self.slug
         self.title = md.Meta['title'][0]
         self.ts = parse_date(md.Meta['date'][0])
+        self.draft = 'draft' in md.Meta
 
     def get_path(self, posts_dir):
         return join(posts_dir, '{}/{}/{}'.format(self.ts.tm_year, 
@@ -119,6 +126,8 @@ class StaticGenerator:
         def process_post(post_path):
             print 'Processing post, ', post_path
             post = Post(post_path)
+            if post.draft:
+                return
             self._posts.append(post)
         posts_path = join(self.src_dir, POSTS_DIR)
         each_file(posts_path, process_post)
@@ -142,9 +151,10 @@ class StaticGenerator:
             if ext == '.md':
                 html = get_html(page_path)
             elif ext == '.html':
-                html = open(page_path, 'wb').read()
+                html = open(page_path, 'rb').read()
             else:
-                raise Exception('File extension {} not supported'.format(ext))
+                print 'File extension {} not supported'.format(ext)
+                return
             out_path = join(self.out_dir, page_name)
             out_dir = dirname(out_path)
             if not exists(out_dir):
