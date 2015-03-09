@@ -11,11 +11,11 @@
       </tr>
       {% for post in g.posts %}
       <tr class="post-item">
-        <td class="post-day"> 
-          {{ date_ordinal(post.ts.tm_mday) }} 
+        <td class="post-day">
+          {{ date_ordinal(post.ts.tm_mday) }}
         </td>
         <td>
-          <a href="{{ post.get_path(config.post_prefix) }}">
+          <a href="{{ post.out_path }}">
             {{ post.title }}
           </a>
         </td>

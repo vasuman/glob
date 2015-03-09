@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+
 import yaml
 from datetime import date
 from StringIO import StringIO
@@ -12,7 +13,6 @@ from shutil import copytree, rmtree
 import time
 from collections import namedtuple
 
-
 MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list']
 
 TIME_FORMAT_READ = '%d-%m-%Y'
@@ -24,6 +24,8 @@ TEMPLATES_DIR = 'templates'
 POSTS_DIR = 'posts'
 PAGES_DIR = 'pages'
 STATIC_DIR = 'static'
+
+POST_PREFIX = 'posts'
 
 def group_posts(posts):
     PostGroup = namedtuple('PostGroup', ['month', 'year', 'posts'])
@@ -40,10 +42,6 @@ def group_posts(posts):
         if not add_to_class(post):
             cls.append(PostGroup(post.ts.tm_mon, post.ts.tm_year, [post]))
     return sorted(cls, key = lambda x: x.year * 12 + x.month, reverse = True)
-
-
-def safe_email(email):
-    return email.split('@')
 
 def date_ordinal(day):
     if 4 <= day <= 20 or 24 <= day <= 30:
@@ -78,7 +76,6 @@ def add_helpers(env):
     env.globals.update(format_time = format_time)
     env.globals.update(group_qual = group_qual)
     env.globals.update(date_ordinal = date_ordinal)
-    env.globals.update(safe_email = safe_email)
 
 def get_html(md_path):
     s = StringIO()
@@ -101,10 +98,20 @@ class Post:
         self.title = md.Meta['title'][0]
         self.ts = parse_date(md.Meta['date'][0])
         self.draft = 'draft' in md.Meta
+        self.out_path = self._get_path()
 
-    def get_path(self, posts_dir):
-        return join(posts_dir, '{}/{}/{}'.format(self.ts.tm_year, 
+    def _get_path(self):
+        return join(POST_PREFIX, '{}/{}/{}'.format(self.ts.tm_year, 
             self.ts.tm_mon, self.ts.tm_mday), self.slug) + '.html'
+
+    def render(self, tmpl, ctx):
+        f_path = join(ctx.out_dir, self.out_path)
+        f_dir = dirname(f_path)
+        if not exists(f_dir):
+            os.makedirs(f_dir)
+        with open(f_path, 'wb') as f:
+            out = tmpl.render(post = self, config = ctx.config)
+            f.write(out)
 
 class StaticGenerator:
     def __init__(self, src_dir, out_dir):
@@ -112,38 +119,14 @@ class StaticGenerator:
         self.out_dir = out_dir
         cfg_path = join(self.src_dir, CONFIG_FILE)
         self.config = yaml.load(open(cfg_path))
-        template_path = join(self.src_dir, TEMPLATES_DIR)
+        template_path = join(get_self_path(), TEMPLATES_DIR)
         self.env = Environment(loader = FileSystemLoader(template_path))
         add_helpers(self.env)
         self._posts = []
 
-    def _write_out(self, path, content, tmpl):
-        with open(join(self.out_dir, path), 'wb') as f:
-            html = tmpl.render(ctx = self, content = content)
-            f.write(html)
-
     def generate(self):
-        def process_post(post_path):
-            print 'Processing post, ', post_path
-            post = Post(post_path)
-            if post.draft:
-                return
-            self._posts.append(post)
-        posts_path = join(self.src_dir, POSTS_DIR)
-        each_file(posts_path, process_post)
-        blog_dir = join(self.out_dir, self.config['post_prefix'])
-        if os.path.exists(blog_dir):
-            rmtree(blog_dir)
-        post_template = self.env.get_template('post.html')
-        for post in self._posts:
-            out_path = post.get_path(blog_dir)
-            out_dir = dirname(out_path)
-            if not exists(out_dir):
-                os.makedirs(out_dir)
-            with open(out_path, 'wb') as f:
-                out = post_template.render(post = post, config = self.config)
-                f.write(out)
-        base = self.env.get_template('base.html')
+
+        # For each page!
         def process_page(page_path):
             print 'Processing page, ', page_path
             name, ext = splitext(page_path)
@@ -161,12 +144,36 @@ class StaticGenerator:
                 os.makedirs(out_dir)
             with open(out_path, 'wb') as f:
                 f.write(base.render(content = html, config = self.config))
+
+        # For each post
+        def process_post(post_path):
+            print 'Processing post, ', post_path
+            post = Post(post_path)
+            if post.draft:
+                return
+            self._posts.append(post)
+            post_template = self.env.get_template('post.html')
+            post.render(post_template, self)
+
+        # Generate posts
+        posts_path = join(self.src_dir, POSTS_DIR)
+        blog_dir = join(self.out_dir, POST_PREFIX)
+        if os.path.exists(blog_dir):
+            rmtree(blog_dir)
+        each_file(posts_path, process_post)
+
+        # Generate pages
+        base = self.env.get_template('base.html')
         pages_path = join(self.src_dir, PAGES_DIR)
         each_file(pages_path, process_page)
-        archives = self.env.get_template('archives.html')
+
+        # Generate index page
+        archives = self.env.get_template('index.html')
         with open(join(self.out_dir, 'index.html'), 'wb') as f:
             groups = group_posts(self._posts)
             f.write(archives.render(config = self.config, groups = groups))
+
+        # Copy static files
         out_static = join(self.out_dir, STATIC_DIR)
         if exists(out_static):
             rmtree(out_static)
@@ -176,8 +183,8 @@ def get_self_path():
     return dirname(realpath(__file__))
 
 def main():
-    src_dir = get_self_path()
-    out_dir = sys.argv[1]
+    src_dir = sys.argv[1]
+    out_dir = sys.argv[2]
     if not exists(out_dir):
         os.makedirs(out_dir)
     gen = StaticGenerator(src_dir, out_dir)

@@ -4,9 +4,17 @@ A simple blog generator.
 
 ## Usage instructions
 
-1. Use the `config.yml.template` file to generate a `config.yml`
+1. Create an empty directory tree for your content that looks like,
 
-2. Create or link to a `posts` and a `pages` directory
+```bash
+$ mkdir -p $DIR/{pages,posts,static}
+```
+
+2. Copy the `config.yml.template` into the directory.
+
+3. Copy the default css files into the `$DIR/static` directory.
+
+3. Use the `blog.sh` script.
 
 ### Posts
 
@@ -23,4 +31,6 @@ This is *markdown* formatted content
 
 ### Pages
 
-Simple `.md` or `.html` files whose content is just inserted into the base template. The pages are generated on paths that match the directory structure relative to the `pages/` directory.
+Simple `.md` or `.html` files whose content is just inserted into the base
+template. The pages are generated on paths that match the directory structure
+relative to the `pages/` directory.
