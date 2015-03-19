@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Change this stuff
-BLOG_DIR=$HOME/stuff/Blog/
-OUT_DIR=$HOME/stuff/vasuman.github.io/
-SCRIPT_PATH=$HOME/code/py/glob/generate.py 
+ROOT_DIR=$HOME
+BLOG_DIR=$ROOT_DIR/stuff/Blog/
+OUT_DIR=$ROOT_DIR/stuff/vasuman.github.io/
+SCRIPT_PATH=$ROOT_DIR/code/py/glob/generate.py 
 
 PORT_NUMBER=59937
 WATCH_DIR=$BLOG_DIR/posts
