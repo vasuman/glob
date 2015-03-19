@@ -7,7 +7,8 @@ from jinja2 import Environment, FileSystemLoader
 import argparse
 import sys
 import os
-from os.path import join, splitext, exists, basename, dirname, realpath, relpath
+from posixpath import join
+from os.path import splitext, exists, basename, dirname, realpath, relpath
 from markdown import Markdown, markdownFromFile
 from shutil import copytree, rmtree
 import time
@@ -37,7 +38,7 @@ def group_posts(posts):
             if eq(post, cl):
                 cl.posts.append(post)
                 return True
-        return False
+            return False
     for post in posts:
         if not add_to_class(post):
             cls.append(PostGroup(post.ts.tm_mon, post.ts.tm_year, [post]))
@@ -50,10 +51,14 @@ def date_ordinal(day):
         suffix = ["st", "nd", "rd"][day % 10 - 1]
     return str(day) + suffix
 
+def ignore_file(fname):
+    return fname.endswith('.swp') or fname.startswith('.') or fname.startswith('#')
+
 def each_file(dir_path, func):
     for fdir, _, fnames in os.walk(dir_path):
         for fname in fnames:
-            if fname.endswith('.swp'):
+            if ignore_file(fname):
+                print 'Ignoring, ', fname
                 continue
             path = join(fdir, fname)
             print path
@@ -94,15 +99,15 @@ class Post:
             self.slug = md.Meta['slug'][0]
         else:
             self.slug, _ = splitext(basename(post_path))
-            print self.slug
+        print self.slug
         self.title = md.Meta['title'][0]
         self.ts = parse_date(md.Meta['date'][0])
         self.draft = 'draft' in md.Meta
         self.out_path = self._get_path()
 
     def _get_path(self):
-        return join(POST_PREFIX, '{}/{}/{}'.format(self.ts.tm_year, 
-            self.ts.tm_mon, self.ts.tm_mday), self.slug) + '.html'
+        date_path = '{}/{}/{}'.format(self.ts.tm_year, self.ts.tm_mon, self.ts.tm_mday)
+        return join(POST_PREFIX, date_path, self.slug) + '.html'
 
     def render(self, tmpl, ctx):
         f_path = join(ctx.out_dir, self.out_path)
@@ -111,7 +116,7 @@ class Post:
             os.makedirs(f_dir)
         with open(f_path, 'wb') as f:
             out = tmpl.render(post = self, config = ctx.config)
-            f.write(out)
+            f.write(out.encode('utf-8'))
 
 class StaticGenerator:
     def __init__(self, src_dir, out_dir):
@@ -138,12 +143,14 @@ class StaticGenerator:
             else:
                 print 'File extension {} not supported'.format(ext)
                 return
+            html = html.decode('utf-8')
             out_path = join(self.out_dir, page_name)
             out_dir = dirname(out_path)
             if not exists(out_dir):
                 os.makedirs(out_dir)
             with open(out_path, 'wb') as f:
-                f.write(base.render(content = html, config = self.config))
+                page_html = base.render(content = html, config = self.config)
+                f.write(page_html.encode('utf-8'))
 
         # For each post
         def process_post(post_path):
