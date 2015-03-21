@@ -1,28 +1,30 @@
 #!/bin/bash
 
-# Change this stuff
-ROOT_DIR=$HOME
-BLOG_DIR=$ROOT_DIR/stuff/Blog/
-OUT_DIR=$ROOT_DIR/stuff/vasuman.github.io/
-SCRIPT_PATH=$ROOT_DIR/code/py/glob/generate.py 
+# Pass these arguments
+BLOG_DIR=$1
+OUT_DIR=$2
+SCRIPT_PATH=$3
 
-PORT_NUMBER=59937
-WATCH_DIR=$BLOG_DIR/posts
-python2 $SCRIPT_PATH $BLOG_DIR $OUT_DIR
-if [[ $1 == "-deploy" ]]; then
+PORT_NUMBER=8000
+WATCH_DIR=$BLOG_DIR
+python $SCRIPT_PATH $BLOG_DIR $OUT_DIR
+
+# Fourth argument is an additional flag
+if [[ $4 == "-deploy" ]]; then
     cd $OUT_DIR
     git add . 
     git commit -am 'Automated commit' 
     git push
     cd -
-elif [[ $1 == "-watch" ]]; then
-    echo "Listeneing on $WATCH_DIR"
-    while inotifywait -e close_write,moved_to,create "$WATCH_DIR"; do
-        python2 $SCRIPT_PATH $BLOG_DIR $OUT_DIR
+elif [[ $4 == "-watch" ]]; then
+    cd $OUT_DIR
+    python -m SimpleHTTPServer $PORT_NUMBER &
+    cd -
+    trap 'kill $(jobs -p)' EXIT
+    echo "Started HTTP server"
+    echo "Watching... $WATCH_DIR"
+    while inotifywait -r -e close_write,moved_to,create "$WATCH_DIR"; do
+        python $SCRIPT_PATH $BLOG_DIR $OUT_DIR
     done
 fi
-unset BLOG_DIR
-unset OUT_DIR
-unset PORT_NUMBER
-unset SCRIPT_PATH
-unset WATCH_DIR
+

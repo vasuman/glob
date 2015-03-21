@@ -10,7 +10,7 @@ A simple blog generator.
 $ mkdir -p $DIR/{pages,posts,static}
 ```
 
-2. Copy the `config.yml.template` into the directory.
+2. Copy the `config.example.yml` into the directory as `config.yml`.
 
 3. Copy the default css files into the `$DIR/static` directory.
 

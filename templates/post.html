@@ -5,6 +5,12 @@
 {% block imports %}
 {{ super() }}
 <link rel="stylesheet" href="/static/pygments.css">
+{% if 'mathjax' in post.flags %}
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {}});
+</script>
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endif %}
 {% endblock %}
 {% block content %}
     <article>
