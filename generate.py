@@ -13,6 +13,7 @@ from markdown import Markdown, markdownFromFile
 from shutil import copytree, rmtree
 import time
 from collections import namedtuple
+import random
 
 MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list']
 
@@ -67,6 +68,9 @@ def each_file(dir_path, func):
 def parse_date(date_str):
     return time.strptime(date_str, TIME_FORMAT_READ)
 
+def select_random(xs):
+    return random.choice(xs)
+
 def group_qual(g):
     return date(g.year, g.month, 1).strftime('%B %Y')
 
@@ -77,6 +81,7 @@ def format_time(t):
     return time.strftime(TIME_FORMAT_RFC, t)
 
 def add_helpers(env):
+    env.globals.update(select_random = select_random)
     env.globals.update(readable_time = readable_time)
     env.globals.update(format_time = format_time)
     env.globals.update(group_qual = group_qual)

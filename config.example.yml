@@ -1,5 +1,8 @@
 title: Something Witty
-subtitle: Short description
+subs:
+        - List of subtitles
+        - Randomly selected
+        - On each page
 author: Rifle Ravi
 url:
         domain: example.com
