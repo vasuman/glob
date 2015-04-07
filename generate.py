@@ -113,7 +113,7 @@ class Post:
         self.ts = parse_date(md.Meta['date'][0])
         self.draft = 'draft' in md.Meta
         self.out_path = self._get_path()
-        self.flags = md.Meta['flags'] if 'flags' in md.Meta else []
+        self.exts = md.Meta.get('exts', [])
 
     def _get_path(self):
         date_path = '{}/{}/{}'.format(self.ts.tm_year, self.ts.tm_mon, self.ts.tm_mday)
