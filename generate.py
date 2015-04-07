@@ -29,6 +29,10 @@ STATIC_DIR = 'static'
 
 POST_PREFIX = 'posts'
 
+flags = None
+
+FLAG_SKIP_DRAFTS = '-skipdrafts'
+
 def group_posts(posts):
     PostGroup = namedtuple('PostGroup', ['month', 'year', 'posts'])
     def eq(p, x):
@@ -162,7 +166,7 @@ class StaticGenerator:
         def process_post(post_path):
             print 'Processing post, ', post_path
             post = Post(post_path)
-            if post.draft:
+            if (FLAG_SKIP_DRAFTS in flags) and post.draft:
                 return
             self._posts.append(post)
             post_template = self.env.get_template('post.html')
@@ -196,10 +200,12 @@ def get_self_path():
     return dirname(realpath(__file__))
 
 def main():
+    global flags
     src_dir = sys.argv[1]
     out_dir = sys.argv[2]
     if not exists(out_dir):
         os.makedirs(out_dir)
+    flags = sys.argv[3:]
     gen = StaticGenerator(src_dir, out_dir)
     gen.generate()
 
