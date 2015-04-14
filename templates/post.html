@@ -14,8 +14,8 @@
 {% endblock %}
 {% block content %}
     <article>
-        <div class="post-description">
-            <h3>{{ post.title }}</h3>
+        <div class="post-header">
+          <h1>{{ post.title }}</h1>
             <time datetime="{{ format_time(post.ts) }}">{{ readable_time(post.ts) }}</time>
         </div>
         {{ post.html.decode('utf-8') }}

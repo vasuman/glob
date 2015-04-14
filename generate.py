@@ -14,8 +14,9 @@ from shutil import copytree, rmtree
 import time
 from collections import namedtuple
 import random
+from figure import FigureExtension
 
-MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list']
+MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list', FigureExtension()]
 
 TIME_FORMAT_READ = '%d-%m-%Y'
 TIME_FORMAT_WRITE = '%d %b %Y'
