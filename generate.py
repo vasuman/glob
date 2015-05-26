@@ -1,7 +1,8 @@
 #!/usr/bin/env python2
 
+
 import yaml
-from datetime import date
+from datetime import date, datetime
 from StringIO import StringIO
 from jinja2 import Environment, FileSystemLoader
 import argparse
@@ -15,12 +16,15 @@ import time
 from collections import namedtuple
 import random
 from figure import FigureExtension
+import uuid
 
-MKD_EXT = ['extra', 'meta', 'codehilite(linenums=True)', 'def_list', FigureExtension()]
+FEED_FILE = 'atom.xml'
 
-TIME_FORMAT_READ = '%d-%m-%Y'
-TIME_FORMAT_WRITE = '%d %b %Y'
-TIME_FORMAT_RFC = '%Y-%m-%d'
+MKD_EXT = ['extra', 'meta', 'codehilite', 'def_list', FigureExtension()]
+
+DATE_FORMAT_READ = '%d-%m-%Y'
+DATE_FORMAT_WRITE = '%d %b %Y'
+DATE_FORMAT_RFC = '%Y-%m-%d'
 
 CONFIG_FILE = 'config.yml'
 TEMPLATES_DIR = 'templates'
@@ -44,7 +48,8 @@ def group_posts(posts):
             if eq(post, cl):
                 cl.posts.append(post)
                 return True
-            return False
+        return False
+
     for post in posts:
         if not add_to_class(post):
             cls.append(PostGroup(post.ts.tm_mon, post.ts.tm_year, [post]))
@@ -71,7 +76,7 @@ def each_file(dir_path, func):
             func(path)
 
 def parse_date(date_str):
-    return time.strptime(date_str, TIME_FORMAT_READ)
+    return time.strptime(date_str, DATE_FORMAT_READ)
 
 def select_random(xs):
     return random.choice(xs)
@@ -79,23 +84,46 @@ def select_random(xs):
 def group_qual(g):
     return date(g.year, g.month, 1).strftime('%B %Y')
 
-def readable_time(t):
-    return time.strftime(TIME_FORMAT_WRITE, t)
+def to_dt(ts):
+    t = time.mktime(ts)
+    return datetime.fromtimestamp(t)
 
-def format_time(t):
-    return time.strftime(TIME_FORMAT_RFC, t)
+def now():
+    return datetime.utcnow()
+
+def rfc_time(dt):
+    return dt.isoformat("T") + "Z" # FIXME!
+
+def readable_date(t):
+    return time.strftime(DATE_FORMAT_WRITE, t)
+
+def format_date(t):
+    return time.strftime(DATE_FORMAT_RFC, t)
 
 def add_helpers(env):
     env.globals.update(select_random = select_random)
-    env.globals.update(readable_time = readable_time)
-    env.globals.update(format_time = format_time)
+    env.globals.update(readable_date = readable_date)
+    env.globals.update(format_date = format_date)
     env.globals.update(group_qual = group_qual)
     env.globals.update(date_ordinal = date_ordinal)
+    env.globals.update(site_url = site_url)
+    env.globals.update(feed_url = feed_url)
+    env.globals.update(get_uuid = get_uuid)
+    env.globals.update(now = now)
+    env.globals.update(to_dt = to_dt)
+    env.globals.update(rfc_time = rfc_time)
 
 def get_html(md_path):
     s = StringIO()
     markdownFromFile(md_path, s, extensions = MKD_EXT)
     return s.getvalue()
+
+PROTO = 'http'
+def site_url(cfg):
+    return "{}://{}{}".format(PROTO, cfg['url']['domain'], cfg['url']['path'])
+
+def feed_url(cfg):
+    return site_url(cfg) + FEED_FILE
 
 class Post:
     def __init__(self, post_path):
@@ -103,7 +131,7 @@ class Post:
         md = Markdown(extensions = MKD_EXT, output_format = 'xhtml5')
         buf = StringIO()
         md.convertFile(input = self.path, output = buf)
-        self.html = buf.getvalue()
+        self.html = buf.getvalue().decode('utf-8')
         buf.close()
         if 'slug' in md.Meta:
             self.slug = md.Meta['slug'][0]
@@ -115,10 +143,14 @@ class Post:
         self.draft = 'draft' in md.Meta
         self.out_path = self._get_path()
         self.exts = md.Meta.get('exts', [])
+        self.last_updated = os.path.getmtime(post_path)
 
     def _get_path(self):
         date_path = '{}/{}/{}'.format(self.ts.tm_year, self.ts.tm_mon, self.ts.tm_mday)
         return join(POST_PREFIX, date_path, self.slug) + '.html'
+
+    def get_url(self, cfg):
+        return site_url(cfg) + self.out_path
 
     def render(self, tmpl, ctx):
         f_path = join(ctx.out_dir, self.out_path)
@@ -128,6 +160,9 @@ class Post:
         with open(f_path, 'wb') as f:
             out = tmpl.render(post = self, config = ctx.config)
             f.write(out.encode('utf-8'))
+
+def get_uuid(url):
+    return 'urn:uuid:' + str(uuid.uuid5(uuid.NAMESPACE_URL, url))
 
 class StaticGenerator:
     def __init__(self, src_dir, out_dir):
@@ -139,6 +174,13 @@ class StaticGenerator:
         self.env = Environment(loader = FileSystemLoader(template_path))
         add_helpers(self.env)
         self._posts = []
+
+    def _generate_feed(self):
+        ft = self.env.get_template('feed.xml')
+        with open(join(self.out_dir, FEED_FILE), 'wb') as f:
+            posts = sorted(self._posts, key=lambda x:x.ts, reverse=True)
+            feed = ft.render(posts = posts, config = self.config)
+            f.write(feed.encode('utf-8'))
 
     def generate(self):
 
@@ -196,6 +238,7 @@ class StaticGenerator:
         if exists(out_static):
             rmtree(out_static)
         copytree(join(self.src_dir, STATIC_DIR), out_static)
+        self._generate_feed()
 
 def get_self_path():
     return dirname(realpath(__file__))

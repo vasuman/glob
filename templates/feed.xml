@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ config.title }}</title>
+  <subtitle>{{ select_random(config.subs) }}</subtitle>
+  <link href="{{ site_url(config) }}" rel="alternate"/>
+  <link href="{{ feed_url(config) }}" rel="self"/>
+  <id>{{ site_url(config) }}</id>
+  <updated>{{ rfc_time(now()) }}</updated>
+  <author>
+    <name>{{ config.author }}</name>
+    <email>{{ config.email }}</email>
+  </author>
+  {% for post in posts%}
+  <entry>
+    <id>{{ post.get_url(config) }}</id>
+    <title>{{ post.title }}</title>
+    <link href="{{ post.get_url(config) }}" rel="alternate"/>
+    <updated>{{ rfc_time(to_dt(post.ts)) }}</updated>
+    <!-- <content type="html"> </content> -->
+    <!-- TODO: <summary> -->
+  </entry>
+  {% endfor %}
+</feed>

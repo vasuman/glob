@@ -13,11 +13,11 @@
 {% endif %}
 {% endblock %}
 {% block content %}
-    <article>
+    <article class="std-format">
         <div class="post-header">
           <h1>{{ post.title }}</h1>
-            <time datetime="{{ format_time(post.ts) }}">{{ readable_time(post.ts) }}</time>
+            <time datetime="{{ format_date(post.ts) }}">{{ readable_date(post.ts) }}</time>
         </div>
-        {{ post.html.decode('utf-8') }}
+        {{ post.html }}
     </article>
 {% endblock %}

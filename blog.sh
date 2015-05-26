@@ -25,7 +25,11 @@ elif [[ $4 == "-watch" ]]; then
     trap 'kill $(jobs -p)' EXIT
     echo "Started HTTP server"
     echo "Watching... $WATCH_DIR"
-    while inotifywait -r -e close_write,moved_to,create "$WATCH_DIR"; do
+    WAIT_CMD="read -p \"Regen...\""
+    if [[ $5 == "-inotify" ]]; then
+        WAIT_CMD="inotifywait -r -e close_write,moved_to,create \"$WATCH_DIR\""
+    fi
+    while eval $WAIT_CMD; do
         python $SCRIPT_PATH $BLOG_DIR $OUT_DIR
     done
 fi
