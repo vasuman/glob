@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 
-
 import yaml
 from datetime import date, datetime
 from StringIO import StringIO
@@ -36,12 +35,12 @@ POST_PREFIX = 'posts'
 
 flags = None
 
-FLAG_SKIP_DRAFTS = '-skipdrafts'
+FLAG_SKIP_DRAFTS = '--skip-drafts'
 
 def group_posts(posts):
-    PostGroup = namedtuple('PostGroup', ['month', 'year', 'posts'])
+    PostGroup = namedtuple('PostGroup', ['year', 'posts'])
     def eq(p, x):
-        return x.month == p.ts.tm_mon and x.year == p.ts.tm_year
+        return x.year == p.ts.tm_year
     cls = []
     def add_to_class(post):
         for cl in cls:
@@ -49,18 +48,18 @@ def group_posts(posts):
                 cl.posts.append(post)
                 return True
         return False
-
     for post in posts:
         if not add_to_class(post):
-            cls.append(PostGroup(post.ts.tm_mon, post.ts.tm_year, [post]))
-    return sorted(cls, key = lambda x: x.year * 12 + x.month, reverse = True)
+            cls.append(PostGroup(post.ts.tm_year, [post]))
+    return sorted(cls, key = lambda x: x.year, reverse = True)
 
-def date_ordinal(day):
+def format_post_ts(ts):
+    day = ts.tm_mday
     if 4 <= day <= 20 or 24 <= day <= 30:
         suffix = "th"
     else:
         suffix = ["st", "nd", "rd"][day % 10 - 1]
-    return str(day) + suffix
+    return "{}{} {}".format(day, suffix, time.strftime("%B", ts))
 
 def ignore_file(fname):
     return fname.endswith('.swp') or fname.startswith('.') or fname.startswith('#')
@@ -82,7 +81,7 @@ def select_random(xs):
     return random.choice(xs)
 
 def group_qual(g):
-    return date(g.year, g.month, 1).strftime('%B %Y')
+    return str(g.year)
 
 def to_dt(ts):
     t = time.mktime(ts)
@@ -103,9 +102,9 @@ def format_date(t):
 def add_helpers(env):
     env.globals.update(select_random = select_random)
     env.globals.update(readable_date = readable_date)
+    env.globals.update(format_post_ts = format_post_ts)
     env.globals.update(format_date = format_date)
     env.globals.update(group_qual = group_qual)
-    env.globals.update(date_ordinal = date_ordinal)
     env.globals.update(site_url = site_url)
     env.globals.update(feed_url = feed_url)
     env.globals.update(get_uuid = get_uuid)
@@ -143,6 +142,7 @@ class Post:
         self.draft = 'draft' in md.Meta
         self.out_path = self._get_path()
         self.exts = md.Meta.get('exts', [])
+        self.scripts = md.Meta.get('scripts', [])
         self.last_updated = os.path.getmtime(post_path)
 
     def _get_path(self):
@@ -229,7 +229,7 @@ class StaticGenerator:
 
         # Generate index page
         archives = self.env.get_template('index.html')
-        with open(join(self.out_dir, 'index.html'), 'wb') as f:
+        with open(join(self.out_dir, 'posts', 'index.html'), 'wb') as f:
             groups = group_posts(self._posts)
             f.write(archives.render(config = self.config, groups = groups))
 

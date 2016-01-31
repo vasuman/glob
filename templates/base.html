@@ -22,9 +22,9 @@
     {% endblock %}
   </head>
   <body>
-    <div id="header" > 
-      <a href="{{ config.url.path }}"><h1> {{ config.title }} </h1></a> 
-      <h2> {{ select_random(config.subs) }} </h2>
+    <div id="header">
+        <a href="{{ config.url.path }}"><h1> {{ config.title }} </h1></a>
+        <h2> {{ select_random(config.subs) }} </h2>
     </div>
     <nav>
       <ul>
@@ -48,18 +48,21 @@
     </div>
     <footer>
       <address>
-        <a id="email-link" href="mailto:{{ config.email|safe }}">{{ config.author }}</a>
+        <a href="mailto:{{ config.email|safe }}">{{ config.author }}</a>
       </address>
       <div id="accounts">
         <ul>
-          {% if config.accounts.github %} 
+          {% if config.accounts.github %}
           <li><a href="https://github.com/{{ config.accounts.github }}">GitHub</a></li>
           {% endif %}
-          {% if config.accounts.twitter %} 
+          {% if config.accounts.twitter %}
           <li><a href="https://twitter.com/{{ config.accounts.twitter }}">Twitter</a></li>
           {% endif %}
         </ul>
       </div>
+      {% if config.btc %}
+      <div id="btc">{{ config.btc }} </div>
+      {% endif %}
       <div id="creds">
         Generated using, <a href="https://github.com/vasuman/glob">glob</a>
       </div>

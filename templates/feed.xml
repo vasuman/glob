@@ -10,14 +10,12 @@
     <name>{{ config.author }}</name>
     <email>{{ config.email }}</email>
   </author>
-  {% for post in posts%}
+{% for post in posts%}
   <entry>
     <id>{{ post.get_url(config) }}</id>
     <title>{{ post.title }}</title>
     <link href="{{ post.get_url(config) }}" rel="alternate"/>
     <updated>{{ rfc_time(to_dt(post.ts)) }}</updated>
-    <!-- <content type="html"> </content> -->
-    <!-- TODO: <summary> -->
   </entry>
-  {% endfor %}
+{% endfor %}
 </feed>

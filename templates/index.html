@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="posts">
-  <h3> Posts </h3>
+<div class="std-format" id="posts">
   <table class="post-group">
     <tbody>
       {% for g in groups %}
@@ -11,11 +10,11 @@
       </tr>
       {% for post in g.posts %}
       <tr class="post-item">
-        <td class="post-day">
-          {{ date_ordinal(post.ts.tm_mday) }}
+        <td class="post-ts">
+          {{ format_post_ts(post.ts) }}
         </td>
         <td>
-          <a href="{{ post.out_path }}">
+          <a href="{{ '/' + post.out_path }}">
             {{ post.title }}
           </a>
         </td>
